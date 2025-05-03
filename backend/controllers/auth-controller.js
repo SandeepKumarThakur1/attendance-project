@@ -1,0 +1,70 @@
+const { employeeModel } = require("../models/employee-model");
+const { hashChecker, hashMaker } = require("../utils/hashGenerator");
+const { tokenMaker } = require("../utils/tokenGenerator");
+
+module.exports.loginController = async (req, res, next) => {
+  try {
+    const { email, password } = req.body;
+    if (!email || !password) {
+      return res.status(400).json({
+        status: 400,
+        message: "All fields are required",
+      });
+    }
+
+    const employee = await employeeModel.findOne({ email });
+    if (!employee) {
+      return res.status(401).json({
+        status: 401,
+        message: "Email or password is incorrect",
+      });
+    }
+
+    const isHashVerify = await hashChecker(employee.password, password);
+    if (!isHashVerify) {
+      return res.status(401).json({
+        status: 401,
+        message: "Email or password is incorrect",
+      });
+    }
+
+    const token = tokenMaker(employee._id);
+    res.status(200).json({
+      status: 200,
+      message: "Successfully Login",
+      token,
+      employee: {
+        _id: employee._id,
+        name: employee.name,
+        email: employee.email,
+        department: employee.department,
+        leaveBalance: employee.leaveBalance,
+        attendance: employee.attendance,
+        leaveRequests: employee.leaveRequests,
+      },
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.registerController = async (req, res, next) => {
+  try {
+    const { name, email, password, role, department } = req.body;
+    const hashpassword = await hashMaker(password);
+    const admin = await employeeModel.create({
+      name,
+      email,
+      password: hashpassword,
+      role,
+      department,
+    });
+    res.status(201).json({
+      status: 201,
+      message: "Successfully Created Admin",
+      admin,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
