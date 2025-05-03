@@ -51,8 +51,17 @@ module.exports.loginController = async (req, res, next) => {
 module.exports.registerController = async (req, res, next) => {
   try {
     const { name, email, password, role, department } = req.body;
+    const admin = await employeeModel.findOne({
+      email,
+    });
+    if (admin) {
+      return res.status(400).json({
+        status: 400,
+        message: "This service is not available",
+      });
+    }
     const hashpassword = await hashMaker(password);
-    const admin = await employeeModel.create({
+    const adminCreated = await employeeModel.create({
       name,
       email,
       password: hashpassword,
@@ -62,7 +71,27 @@ module.exports.registerController = async (req, res, next) => {
     res.status(201).json({
       status: 201,
       message: "Successfully Created Admin",
-      admin,
+      admin: adminCreated,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.tokenRefresh = async (req, res, next) => {
+  try {
+    const user = req.user;
+    if (!user)
+      return res.status(400).json({
+        status: 400,
+        message: "Unauthorized",
+      });
+
+    const token = tokenMaker(user._id);
+    res.status(200).json({
+      status: 200,
+      message: "successfully refresh",
+      token,
     });
   } catch (err) {
     next(err);
