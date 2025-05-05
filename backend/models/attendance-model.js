@@ -1,26 +1,31 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
-const attendanceSchema = new mongoose.Schema({
-  employeeId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee",
-    required: true,
+const attendanceSchema = new mongoose.Schema(
+  {
+    employeeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Employee",
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["clock-in", "clock-out"],
+      required: true,
+    },
+    date: {
+      type: String,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
+    },
   },
-  status: {
-    type: String,
-    enum: ["clock-in", "clock-out"],
-    required: true,
-  },
-  date: {
-    type: Date,
-    required: true,
-  },
-  time: {
-    type: String,
-    required: true,
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 function validateAttendance(attendance) {
   const schema = Joi.object({

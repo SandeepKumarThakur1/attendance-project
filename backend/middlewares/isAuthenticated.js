@@ -3,39 +3,39 @@ const { tokenChecker } = require("../utils/tokenGenerator");
 
 module.exports.isAuthenticated = async (req, res, next) => {
   try {
-    const authHeader = req.headers.authorization;
-    
-    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    const token = req.headers?.authorization?.split(" ")[1];
+    if (!token) {
       return res.status(401).json({
         status: 401,
-        message: "Unauthorized",
+        message: "Unauthorized - Invalid token",
       });
     }
-
-    const token = authHeader.split(" ")[1];
 
     const isValidToken = tokenChecker(token);
-  
-    if (!isValidToken) {
+
+    if (!isValidToken || !isValidToken.id) {
       return res.status(401).json({
         status: 401,
-        message: "Unauthorized",
+        message: "Unauthorized - Invalid token",
       });
     }
 
-    const user = await employeeModel.findOne({ _id:isValidToken.id });
+    const user = await employeeModel
+      .findOne({ _id: isValidToken.id })
+      .select("-password")
+      .populate("attendance")
+      .populate("leaveRequests");
     if (!user) {
       return res.status(401).json({
         status: 401,
-        message: "Unauthorized",
+        message: "Unauthorized - User not found",
       });
     }
 
     req.user = user;
     next();
-
   } catch (err) {
-    next(err);
+    console.log(err);
   }
 };
 

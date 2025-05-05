@@ -17,6 +17,17 @@ module.exports.tokenChecker = (token) => {
   try {
     return jwt.verify(token, process.env.JWT_SECRET);
   } catch (err) {
-    throw new Error("JWT Checking Failed: ", err.message);
+    if (err.name === "TokenExpiredError") {
+      console.error("JWT expired at:", err.expiredAt);
+      return null; 
+    }
+
+    if (err.name === "JsonWebTokenError") {
+      console.error("JWT error:", err.message);
+      return null;
+    }
+
+    console.error("JWT Verification Error:", err.message);
+    return null;
   }
 };

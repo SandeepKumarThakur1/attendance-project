@@ -12,7 +12,10 @@ module.exports.loginController = async (req, res, next) => {
       });
     }
 
-    const employee = await employeeModel.findOne({ email });
+    const employee = await employeeModel
+      .findOne({ email })
+      .populate("attendance")
+      .populate("leaveRequests");
     if (!employee) {
       return res.status(401).json({
         status: 401,
@@ -33,15 +36,7 @@ module.exports.loginController = async (req, res, next) => {
       status: 200,
       message: "Successfully Login",
       token,
-      employee: {
-        _id: employee._id,
-        name: employee.name,
-        email: employee.email,
-        department: employee.department,
-        leaveBalance: employee.leaveBalance,
-        attendance: employee.attendance,
-        leaveRequests: employee.leaveRequests,
-      },
+      employee
     });
   } catch (err) {
     next(err);
@@ -72,6 +67,25 @@ module.exports.registerController = async (req, res, next) => {
       status: 201,
       message: "Successfully Created Admin",
       admin: adminCreated,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports.authMeController = async (req, res, next) => {
+  try {
+    const user = req.user;
+    if (!user)
+      return res.status(400).json({
+        status: 400,
+        message: "Unauthorized",
+      });
+
+    res.status(200).json({
+      status: 200,
+      user,
+      message: "successfully me",
     });
   } catch (err) {
     next(err);

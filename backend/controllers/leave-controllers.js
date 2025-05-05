@@ -3,13 +3,15 @@ const { validateLeave, leaveModel } = require("../models/leave-model");
 
 module.exports.createLeave = async (req, res, next) => {
   try {
-    const { id, leaveType, startDate, endDate } = req.body;
-    if (!id || !leaveType || !startDate || !endDate) {
+    const { id, leavetype, startdate, enddate } = req.body;
+
+    if (!id || !leavetype || !startdate || !enddate) {
       return res.status(400).json({
         status: 400,
         message: "All Field are Requird, Not be Empty",
       });
     }
+
     const employee = await employeeModel.findOne({ _id: id });
     if (!employee)
       return res.status(400).json({
@@ -18,9 +20,9 @@ module.exports.createLeave = async (req, res, next) => {
       });
     const { value, error } = validateLeave({
       employeeId: id,
-      leaveType,
-      startDate,
-      endDate,
+      leaveType:leavetype,
+      startDate:startdate,
+      endDate:enddate,
     });
 
     if (error) {
@@ -31,8 +33,8 @@ module.exports.createLeave = async (req, res, next) => {
     }
 
     const leave = await leaveModel.create(value);
-    employee.leaveRequests.push(leave._id)
-    await employee.save()
+    employee.leaveRequests.push(leave._id);
+    await employee.save();
 
     res.status(200).json({
       status: 200,
@@ -43,12 +45,15 @@ module.exports.createLeave = async (req, res, next) => {
   }
 };
 
-module.exports.allLeaves = async (req, res, next) => {
+module.exports.employeAllLeaves = async (req, res, next) => {
   try {
     const { id } = req.params;
     const employee = await employeeModel
       .findOne({ _id: id })
-      .populate("leaveRequests");
+      .populate({
+        path:"leaveRequests",
+        select:'-createdAt -updatedAt -__v'
+      });
     if (!employee) {
       return res.status(400).json({
         status: 400,
@@ -63,6 +68,29 @@ module.exports.allLeaves = async (req, res, next) => {
     next(err);
   }
 };
+
+module.exports.allLeaves = async (req,res,next) =>{
+  try {
+    const leaves = await leaveModel.find().populate('employeeId')
+
+    const formattedLeave = leaves.map((leave) => ({
+      id:leave._id,
+      name: leave.employeeId.name,
+      email: leave.email,
+      start_Date: leave.startDate,
+      status: leave.status,
+      end_Date: leave.endDate,
+    }));
+
+    res.status(200).json({
+     status:200,
+     message:'Request Success',
+     leaves:formattedLeave
+    })
+  } catch (err) {
+    next(err)
+  }
+}
 
 module.exports.leaveApprove = async (req, res, next) => {
   try {

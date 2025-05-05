@@ -1,49 +1,54 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
-const employeeSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    required: true,
-    enum: ["admin", "employee"],
-    default: "employee",
-  },
-  department: {
-    type: String,
-    required: true,
-  },
-  leaveBalance: {
-    type: Number,
-    required: true,
-    default: 0,
-  },
-  attendance: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "attendance",
+const employeeSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      unique: true,
     },
-  ],
-  leaveRequests: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "leave",
+    email: {
+      type: String,
+      required: true,
+      unique: true,
     },
-  ],
-});
+    password: {
+      type: String,
+      required: true,
+    },
+    role: {
+      type: String,
+      required: true,
+      enum: ["admin", "employee"],
+      default: "employee",
+    },
+    department: {
+      type: String,
+      required: true,
+    },
+    leaveBalance: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
+    attendance: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "attendance",
+      },
+    ],
+    leaveRequests: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "leave",
+      },
+    ],
+  },
+  {
+    timestamps: true,
+  }
+);
 
 function validateEmployee(employee) {
   const schema = Joi.object({

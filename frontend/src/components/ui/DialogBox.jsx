@@ -11,7 +11,7 @@ import { Label } from "@/components/ui/label";
 import Selectbox from "./Selectbox";
 import { Input } from "./input";
 
-const DialogBox = ({ dialogData, dialogTitle }) => {
+const DialogBox = ({ dialogData, dialogTitle, handler }) => {
   const now = new Date();
 
   // Format date as DD-MM-YYYY
@@ -43,33 +43,37 @@ const DialogBox = ({ dialogData, dialogTitle }) => {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="default" className="ml-3">
-          Log Attendance
+          {dialogTitle ? dialogTitle : "Log Attendance"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{dialogTitle || "Add Your Attendance"}</DialogTitle>
         </DialogHeader>
-        <div className="grid gap-5 py-4">
-          {(dialogData || attendance).map((items, key) => (
-            <div key={`${items.title}-${key}`} className="grid gap-4">
-              <Label className="text-right">{items.title}</Label>
-              {Array.isArray(items.value) ? (
-                <Selectbox value={items.value} />
-              ) : (
-                <Input
-                  name={items.title.toLowerCase()}
-                  type="text"
-                  placeholder="Email"
-                  value={items.value}
-                />
-              )}
-            </div>
-          ))}
-        </div>
-        <DialogFooter>
-          <Button type="submit">{ dialogData ? 'Create Leave' : 'Create Log'}</Button>
-        </DialogFooter>
+        <form onSubmit={(e) => handler(e)}>
+          <div className="grid gap-5 py-4">
+            {(dialogData || attendance).map((items, key) => (
+              <div key={`${items.title}-${key}`} className="grid gap-4">
+                <Label className="text-right">{items.title}</Label>
+                {Array.isArray(items.value) ? (
+                  <Selectbox value={items.value} name={items.title.toLowerCase()} />
+                ) : (
+                  <Input
+                    name={items.title.split(" ").join("").toLowerCase()}
+                    type="text"
+                    placeholder={items.title}
+                    defaultValue={items.value}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button type="submit">
+              {dialogTitle ? dialogTitle : "Create Log"}
+            </Button>
+          </DialogFooter>
+        </form>
       </DialogContent>
     </Dialog>
   );

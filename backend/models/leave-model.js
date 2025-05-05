@@ -1,31 +1,36 @@
 const mongoose = require("mongoose");
 const Joi = require("joi");
 
-const leaveSchema = new mongoose.Schema({
-  employeeId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Employee",
-    required: true,
+const leaveSchema = new mongoose.Schema(
+  {
+    employeeId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "employee",
+      required: true,
+    },
+    leaveType: {
+      type: String,
+      enum: ["sick", "vacation", "casual", "other"],
+      required: true,
+    },
+    startDate: {
+      type: String,
+      required: true,
+    },
+    endDate: {
+      type: String,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: ["pending", "approved", "rejected"],
+      default: "pending",
+    },
   },
-  leaveType: {
-    type: String,
-    enum: ["sick", "vacation", "casual", "other"],
-    required: true,
-  },
-  startDate: {
-    type: Date,
-    required: true,
-  },
-  endDate: {
-    type: Date,
-    required: true,
-  },
-  status: {
-    type: String,
-    enum: ["pending", "approved", "rejected"],
-    default: "pending",
-  },
-});
+  {
+    timestamps: true,
+  }
+);
 
 function validateLeave(leave) {
   const schema = Joi.object({

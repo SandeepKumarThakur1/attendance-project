@@ -1,11 +1,8 @@
-import { TrendingUp } from "lucide-react";
 import { Area, AreaChart, CartesianGrid, XAxis } from "recharts";
 
 import {
   Card,
   CardContent,
-  CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -38,11 +35,11 @@ const chartConfig = {
 
 export function Charts() {
   return (
-    <Card>
+    <Card className='size-full'>
       <CardHeader>
         <CardTitle>Your Attendance</CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className='size-full'>
         <ChartContainer config={chartConfig}>
           <AreaChart data={chartData} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />

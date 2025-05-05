@@ -45,9 +45,12 @@ module.exports.employeeAttendance = async (req, res, next) => {
 module.exports.employeeAttendanceRecord = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const employee = await employeeModel
-      .findOne({ _id: id })
-      .populate("attendance");
+
+    const employee = await employeeModel.findOne({ _id: id }).populate({
+      path: "attendance",
+      select: "-__v -createdAt -updatedAt",
+    });
+
     if (!employee) {
       return res.status(400).json({
         status: 400,

@@ -3,13 +3,13 @@ const { hashMaker } = require("../utils/hashGenerator");
 
 module.exports.createEmployee = async (req, res, next) => {
   try {
-    const { name, email, password, department, leaveBalance } = req.body;
+    const { employeename, email, password, department, leavebalance } = req.body;
     const { value, error } = validateEmployee({
-      name,
+      name:employeename,
       email,
       password,
       department,
-      leaveBalance,
+      leaveBalance:leavebalance,
     });
 
     if (error) {
@@ -26,9 +26,9 @@ module.exports.createEmployee = async (req, res, next) => {
         message: "employee already exisited with this email",
       });
 
-    const hashpassword = await hashMaker(password)
+    const hashpassword = await hashMaker(password);
 
-    await employeeModel.create({...value, password:hashpassword});
+    await employeeModel.create({ ...value, password: hashpassword });
 
     res.status(201).json({
       status: 201,
@@ -41,11 +41,27 @@ module.exports.createEmployee = async (req, res, next) => {
 
 module.exports.allEmployees = async (req, res, next) => {
   try {
-    const employees = await employeeModel.find({ role: { $ne: "admin" } });
+    const employees = await employeeModel
+      .find({ role: { $ne: "admin" } })
+      .select("-password")
+      .select("-__v")
+      .select("-updatedAt");
+
+    const formattedEmployees = employees.map((emp) => ({
+      employeeId:emp._id,
+      name: emp.name,
+      email: emp.email,
+      role: emp.role,
+      department: emp.department,
+      leavebalance: emp.leaveBalance,
+      attendance: emp.attendance.length,
+      leaves_Requests: emp.leaveRequests.length,
+    }));
+
     res.status(200).json({
       status: 200,
       message: "Request Successfully",
-      employees,
+      employees: formattedEmployees,
     });
   } catch (err) {
     next(err);
