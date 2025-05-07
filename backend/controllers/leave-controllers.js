@@ -4,7 +4,6 @@ const { validateLeave, leaveModel } = require("../models/leave-model");
 module.exports.createLeave = async (req, res, next) => {
   try {
     const { id, leavetype, startdate, enddate } = req.body;
-
     if (!id || !leavetype || !startdate || !enddate) {
       return res.status(400).json({
         status: 400,
@@ -77,8 +76,8 @@ module.exports.allLeaves = async (req,res,next) =>{
       id:leave._id,
       name: leave.employeeId.name,
       email: leave.email,
-      start_Date: leave.startDate,
       status: leave.status,
+      start_Date: leave.startDate,
       end_Date: leave.endDate,
     }));
 

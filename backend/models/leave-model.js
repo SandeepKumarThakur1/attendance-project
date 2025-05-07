@@ -38,8 +38,8 @@ function validateLeave(leave) {
     leaveType: Joi.string()
       .valid("sick", "vacation", "casual", "other")
       .required(),
-    startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
+    startDate: Joi.string().required(),
+    endDate: Joi.string().required(),
     status: Joi.string().valid("pending", "approved", "rejected"),
   });
 

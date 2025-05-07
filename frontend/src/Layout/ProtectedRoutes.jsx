@@ -1,3 +1,4 @@
+import Loading from "@/components/Loading";
 import { useAuth } from "@/Context/AuthProvider";
 import { Axios } from "@/lib/Axios";
 import React, { useEffect } from "react";
@@ -5,7 +6,8 @@ import { Navigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const ProtectedRoutes = ({ allowedRoles, children }) => {
-  const { user, setUser, loading, setLoading, someChange, SetChange } = useAuth();
+  const { user, setUser, loading, setLoading, someChange, SetChange } =
+    useAuth();
   const token = localStorage.getItem("auth");
 
   useEffect(() => {
@@ -17,7 +19,7 @@ const ProtectedRoutes = ({ allowedRoles, children }) => {
         SetChange(false);
       } catch (err) {
         console.error("Auth error:", err);
-        localStorage.removeItem('auth')
+        localStorage.removeItem("auth");
         toast.error("Not Authorized");
         setUser(null);
       } finally {
@@ -35,7 +37,7 @@ const ProtectedRoutes = ({ allowedRoles, children }) => {
   }
 
   if (loading || !user) {
-    return <div>Loading...</div>;
+    return <Loading />;
   }
 
   if (Array.isArray(allowedRoles)) {

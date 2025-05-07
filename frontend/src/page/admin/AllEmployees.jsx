@@ -1,33 +1,38 @@
 import { DataTable } from "@/components/ui/DataTable";
 import React from "react";
 import { useCreateAttendanceHandler } from "../employee/FormHandlers";
-import { useAllEmployees } from "@/lib/Api";
+import { useAllEmployees, useEmployeeDelete } from "@/lib/Api";
 
 const AllEmployees = () => {
   const { data, isLoading } = useAllEmployees();
   let path = "/employees";
   const { handleCreateAttendance } = useCreateAttendanceHandler(path);
+  const { mutate } = useEmployeeDelete();
+
+  const handleDeleteEmployee = (id) => {
+    mutate({ id });
+  };
 
   let dialogData = [
     {
       title: "Employee Name",
-      value: '',
+      value: "",
     },
     {
       title: "Email",
-      value: '',
+      value: "",
     },
     {
       title: "Password",
-      value: '',
+      value: "",
     },
     {
       title: "Department",
-      value: '',
+      value: "",
     },
     {
       title: "Leave Balance",
-      value: '',
+      value: "",
     },
   ];
 
@@ -35,6 +40,8 @@ const AllEmployees = () => {
     <div>
       <h1 className="text-4xl font-bold mb-8">Employees List</h1>
       <DataTable
+        handleDeleteEmployee={handleDeleteEmployee}
+        isDelete={true}
         dialogTitle="Create Employees"
         dialogData={dialogData}
         handler={handleCreateAttendance}

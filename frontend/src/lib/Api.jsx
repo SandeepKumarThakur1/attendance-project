@@ -110,7 +110,6 @@ export const useAllLeaves = () => {
     queryFn: async () => {
       try {
         const response = await Axios.get(`/leave`);
-        console.log(response)
         return response.data;
       } catch (err) {
         console.log(err);
@@ -118,6 +117,66 @@ export const useAllLeaves = () => {
     },
     onError: (error) => {
       console.error(error.message);
+    },
+  });
+};
+
+export const useEmployeeDelete = () => {
+  const { setLoading } = useAuth();
+  return useMutation({
+    mutationFn: async ({ id }) => {
+      setLoading(true);
+      const response = await Axios.delete(`/employees/${id}`);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setLoading(false);
+      toast.success(`${data.message}😐`);
+    },
+
+    onError: (error) => {
+      setLoading(false);
+      toast.error(`${error.response.data.message}😐`);
+    },
+  });
+};
+
+export const useLeaveApprove = () => {
+  const { setLoading } = useAuth();
+  return useMutation({
+    mutationFn: async ({ id }) => {
+      setLoading(true);
+      const response = await Axios.patch(`/leave/${id}/approve`);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setLoading(false);
+      toast.success(`${data.message}😐`);
+    },
+
+    onError: (error) => {
+      setLoading(false);
+      toast.error(`${error.response.data.message}😐`);
+    },
+  });
+};
+
+export const useLeaveReject = () => {
+  const { setLoading } = useAuth();
+  return useMutation({
+    mutationFn: async ({ id }) => {
+      setLoading(true);
+      const response = await Axios.patch(`/leave/${id}/reject`);
+      return response.data;
+    },
+    onSuccess: (data) => {
+      setLoading(false);
+      toast.success(`${data.message}😐`);
+    },
+
+    onError: (error) => {
+      setLoading(false);
+      toast.error(`${error.response.data.message}😐`);
     },
   });
 };
