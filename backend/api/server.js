@@ -1,9 +1,10 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
-const apiRoutes = require("./routes/api-routes");
-const connectToDb = require("./config/db");
+const apiRoutes = require("../routes/api-routes");
+const connectToDb = require("../config/db");
 const cors = require("cors");
+const serverless = require('serverless-http')
 connectToDb();
 
 app.use(cors());
@@ -23,6 +24,5 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Server running at http://localhost:${PORT}`);
-});
+module.exports = app
+module.exports.handler = serverless(app)
