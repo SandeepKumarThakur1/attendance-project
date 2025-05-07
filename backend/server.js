@@ -4,6 +4,7 @@ const app = express();
 const apiRoutes = require("./routes/api-routes");
 const connectToDb = require("./config/db");
 const cors = require('cors');
+const serverLess = require('serverless-http')
 connectToDb();
 
 app.use(cors());
@@ -23,4 +24,4 @@ app.use((error, req, res, next) => {
   });
 });
 
-app.listen(process.env.PORT);
+module.exports.handler = serverLess(app);
