@@ -7,7 +7,12 @@ const cors = require("cors");
 const serverless = require('serverless-http')
 connectToDb();
 
-app.use(cors());
+app.use(cors({
+  origin:'*',
+}));
+
+app.options("*", cors()); 
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
